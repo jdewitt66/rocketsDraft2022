@@ -7,8 +7,12 @@ require(openxlsx)
 inP <- '../../data/Rockets_Draft_2022'
 fn <- "2022_Rockets_Draft_Data_Sheet .xlsx"   
 
-read.xlsx(file.path(inP, fn), detectDates = T) %>%
+df_anthro <- read.xlsx(file.path(inP, fn), detectDates = T) %>%
   janitor::clean_names()
+
+## 2) Get historical combine data
+fn <- "nba-combine-historical-through-2021-results.csv"
+df_combine <- read.csv(file.path(inP, fn), stringsAsFactors = F)
 
 ## 2) Get Jump data -----
 forceFolder = 'ForceDecks'
