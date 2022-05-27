@@ -3,6 +3,8 @@
 ##
 ## Cleaning includes creating new columns for first and last name, recoding positions, 
 ## and rename variables
+##
+## new output file 'combine2022Cleaned.csv' in the main combine folder
 
 require(tidyverse)
 library(openxlsx)
@@ -44,12 +46,10 @@ d_processed <-
          lane_shuttle_right = as.numeric(lane_shuttle_right),
          sprint_3_4_court = as.numeric(sprint_3_4_court),
          lane_agility = as.numeric(lane_agility),
-         vertical_max = as.numeric(str_remove(vertical_max, '/"' )))    #, ## need to strip the quotation mark
-         vertical_nostep = as.numeric(str_reomve(vertical_nostep, '"'))) ## need to strip the quotation mark
-  
+         vertical_max = as.numeric(str_remove(vertical_max, pattern = "''")),   #, ## need to strip the quotation mark
+         vertical_nostep = as.numeric(str_remove(vertical_nostep, "''"))) %>% ## need to strip the quotation mark
+  select(-college_name)
 
-## read in historical data
-d_hist <- read.csv(file.path(inP, "nba-combine-historical-through-2021-results.csv"))
+write.csv(d_processed, file = 'combine2022Cleaned.csv', row.names = F)
 
-## change names so they are the same in both data frames so they can be combined
 
