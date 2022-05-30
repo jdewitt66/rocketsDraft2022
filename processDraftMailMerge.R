@@ -2,10 +2,51 @@
 
 require(tidyverse)
 require(openxlsx)
-source('procGetHistoricalCombine.R')
 
-## 1) Get the performance data file from the data folder ----
+# folder with code and data
 inP <- '../../data/Rockets_Draft_2022'
+
+## 1) Get combine data
+## 1a) Get historical combine data
+source('procGetHistoricalCombine.R')
+fn <- "nba-combine-historical-through-2021-results.csv"
+df_combine_hist <- getHistoricalCombine(inPath = inP, fileN = fn)
+
+## 1b) Get this year's combine data
+df_combine_2022 <- read.csv('combine2022Cleaned.csv', 
+                            stringsAsFactors = F)
+
+## 1c) all combine data
+df_combine <-
+  bind_rows(
+    df_combine_2022 %>%
+      gather(varName, value, -first_name, -last_name, -position, -testing_year)
+    ,
+    df_combine_hist %>%
+      gather(varName, value, -first_name, -last_name, -position, -testing_year) 
+  )
+
+#inVal = 250
+#vName = 'r_val_BW_lbs'
+#computePctTile(vname = vName, combine_DF = df_combine, inVal)
+
+# function to compute percentile of a given score
+computePctTile <- function(vname, combine_DF, inVal) {
+  # adjust variable name
+  newVname = substring(vname,3)
+  # pull combine scores for the variable name, eliminate NA
+  X <- combine_DF %>% 
+    filter(varName == paste0('c_',newVname)) %>%
+    select(value) %>% na.omit() %>% pull()
+  # find the ranke of the current input value in the vector of all values
+  thisRank = rank(c(inVal, X), na.last = NA, ties.method = "first")[1] 
+  # compute percentile
+  pctTile = round(thisRank / (length(X)+1) * 100,2)
+  return(pctTile)
+}
+
+## 2) Get the performance data file from the data folder ----
+
 fn <- "2022_Rockets_Draft_Data_Sheet .xlsx"   
 
 df_anthro_in <- read.xlsx(file.path(inP, fn), detectDates = T) %>%
@@ -81,50 +122,6 @@ df_anthro <- df_anthro_in %>%
 # 
 # r_pct_shutRRock
 
-## 2) Get historical combine data
-fn <- "nba-combine-historical-through-2021-results.csv"
-df_combine_hist <- getHistoricalCombine(inPath = inP, fileN = fn)
-
-## 3) Get this year's combine data
-df_combine_2022 <- read.csv('combine2022Cleaned.csv', 
-                            stringsAsFactors = F)
-
-## sandbox code to compute percentiles of a specific variables relative to historical combine
-
-# Use combine data to find historical percentile for a score
-# - function(varname, combine dataframe, current score)
-#   - extract data for the variable name from the combine dataframe
-# - find rank for current score
-# - return precentile
-
-## all combine data
-df_combine <-
-  bind_rows(
-    df_combine_2022 %>%
-      gather(varName, value, -first_name, -last_name, -position, -testing_year)
-    ,
-    df_combine_hist %>%
-      gather(varName, value, -first_name, -last_name, -position, -testing_year) 
-)
-
-inVal = 250
-vName = 'r_val_BW_lbs'
-computePctTile(vname = vName, combine_DF = df_combine, inVal)
-
-# funciton to compute percentile of a given score
-computePctTile <- function(vname, combine_DF, inVal) {
-  # adjust variable name
-  newVname = substring(vname,3)
-  # pull combine scores for the variable name, eliminate NA
-  X <- combine_DF %>% 
-  filter(varName == paste0('c_',newVname)) %>%
-  select(value) %>% na.omit() %>% pull()
-  # find the ranke of the current input value in the vector of all values
-  thisRank = rank(c(inVal, X), na.last = NA, ties.method = "first")[1] 
-  # compute percentile
-  pctTile = round(thisRank / (length(X)+1) * 100,2)
-  return(pctTile)
-}
 
 # 
 # c_pct_Ht_wo_shoes
