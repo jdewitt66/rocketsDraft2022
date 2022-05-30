@@ -88,56 +88,43 @@ df_combine_hist <- getHistoricalCombine(inPath = inP, fileN = fn)
 ## 3) Get this year's combine data
 df_combine_2022 <- read.csv('combine2022Cleaned.csv', 
                             stringsAsFactors = F)
-df_combine <- read.csv(file.path(inP, fn), stringsAsFactors = F)
 
-# dd <- df_combine %>%
-#   rename(c_val_Ht_wo_shoes = height_noshoes,
-#          c_val_StandReach = standing_reach,
-#          c_val_Wing = wingspan,
-#          c_val_standMaxVert = vertical_nostep,
-#          c_val_maxVert = vertical_max,
-#          c_val_BW_lbs = weight,
-#          c_val_Bfat_pct = body_fat_pct,
-#          c_val_HandLen = hand_length,
-#          c_val_HandWid = hand_width,
-#          c_val_LaneShut_R = lane_shuttle_right,
-#          c_val_LaneShut_L = lane_shuttle_left,
-#          c_val_LaneAgility = lane_agility,
-#          c_val_3qrtSpeed = sprint_3_4_court) %>%
-#   select(first_name, last_name, testing_year, position,
-#          contains('c_val')) %>%
-#   mutate_at(vars(matches('c_val')), as.numeric)
-# 
-# # [1] ""                  ""                  
-# # [3] "league_code"                 "start_year"                 
-# # [5] ""                    "is_inside"                  
-# [7] "player_id"                   "testing_event_id"           
-# [9] ""                "testing_instance"           
-# [11] "height_shoes"                ""             
-# [13] ""                      ""                   
-# [15] ""                 ""                 
-# [17] ""              ""            
-# [19] ""                ""               
-# [21] "bench_press_reps_185"        ""               
-# [23] "lane_slide"                  "lane_slide2"                
-# [25] ""            "sprint"                     
-# [27] "sprint2"                     "cone_drill"                 
-# [29] "cone_drill2"                 "lane_agility_modified"      
-# [31] "lane_shuttle"                "fga3_eog"                   
-# [33] "fga3_spot"                   "around_the_world_25_1"      
-# [35] "around_the_world_25_2"       "around_the_world_deep_25"   
-# [37] "height_unknown"              "in_and_out"                 
-# [39] "jump4_avg"                   "jump4_reaction"             
-# [41] ""           "lane_shuttle_reaction_left" 
-# [43] ""          "lane_shuttle_reaction_right"
-# [45] "lateral_agility_left"        "lateral_agility_right"      
-# [47] "reach_2hand"                 "reach_sit"                  
-# [49] "repo_1dribble"               "repo_2dribble"              
-# [51] "sprint_20_meter"             "sprint_20_yard"             
-# [53] "superman"                    "tb_power"                   
-# [55] "vert_reach_max"              "vert_reach_nostep"          
-# [57] "windshield_wipers"           "pro_lane_shuttle" 
+## sandbox code to compute percentiles of a specific variables relative to historical combine
 
+# Use combine data to find historical percentile for a score
+# - function(varname, combine dataframe, current score)
+#   - extract data for the variable name from the combine dataframe
+# - find rank for current score
+# - return precentile
+
+## all combine data
+df_combine <-
+  bind_rows(
+    df_combine_2022 %>%
+      gather(varName, value, -first_name, -last_name, -position, -testing_year)
+    ,
+    df_combine_hist %>%
+      gather(varName, value, -first_name, -last_name, -position, -testing_year) 
+)
+
+inVal = 250
+vName = 'r_val_BW_lbs'
+computePctTile(vname = vName, combine_DF = df_combine, inVal)
+
+# funciton to compute percentile of a given score
+computePctTile <- function(vname, combine_DF, inVal) {
+  # adjust variable name
+  newVname = substring(vname,3)
+  # pull combine scores for the variable name, eliminate NA
+  X <- combine_DF %>% 
+  filter(varName == paste0('c_',newVname)) %>%
+  select(value) %>% na.omit() %>% pull()
+  # find the ranke of the current input value in the vector of all values
+  thisRank = rank(c(inVal, X), na.last = NA, ties.method = "first")[1] 
+  # compute percentile
+  pctTile = round(thisRank / (length(X)+1) * 100,2)
+  return(pctTile)
+}
 
 # 
 # c_pct_Ht_wo_shoes
