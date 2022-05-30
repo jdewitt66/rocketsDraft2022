@@ -44,10 +44,10 @@ d_processed <-
                                   ifelse(position == 'SF', 3,
                                          ifelse(position == 'PF', 4, 5))))) %>%
   # convert feet - inch to inch as numeric
-  mutate(height_shoes	= as.numeric(convertToInch_V(height_with_shoes)),
+  mutate(c_val_Ht_wo_shoes	= as.numeric(convertToInch_V(height_with_shoes)),
          height_noshoes	=  as.numeric(convertToInch_V(height_without_shoes)),
-         standing_reach	=  as.numeric(convertToInch_V(standing_reach)),
-         wingspan	=  as.numeric(convertToInch_V(wingspan_dimensions))) %>%
+         c_val_StandReach	=  as.numeric(convertToInch_V(standing_reach)),
+         c_val_Wing	=  as.numeric(convertToInch_V(wingspan_dimensions))) %>%
   # convert attempt / made to separate columns
   separate(mid_side_mid_drill, into = c('mid_side_mid_drill_m', 'mid_side_mid_drill_a'), convert = T) %>%
   separate(side_mid_side_drill, into = c('side_mid_side_drill_m', 'side_mid_side_drill_a'), convert = T) %>%
@@ -59,27 +59,30 @@ d_processed <-
   # add testing year
   mutate(testing_year = 2022) %>%
   # convert body fat to numeric
-  mutate(body_fat = as.numeric(body_fat)) %>%
-  rename(hand_length = hand_dimensions_length,
-         hand_width	= hand_dimensions_width,
-         sprint_3_4_court	= x3_4_court_sprint,
-         lane_agility	= pro_lane,
-         vertical_max	= max_vertical_jump,
-         vertical_nostep = standing_vertical) %>%
+  mutate(c_val_Bfat_pct = as.numeric(body_fat)) %>%
+  rename(c_val_HandLen = hand_dimensions_length,
+         c_val_HandWid	= hand_dimensions_width,
+         c_val_3qrtSpeed	= x3_4_court_sprint,
+         c_val_LaneAgility	= pro_lane,
+         c_val_maxVert	= max_vertical_jump,
+         c_val_standMaxVert = standing_vertical) %>%
   ## convert chars to numeric
-  mutate(hand_width = as.numeric(hand_width),
-         hand_length = as.numeric(hand_length),
-         weight = as.numeric(weight),
-         lane_shuttle_left = as.numeric(lane_shuttle_left),
-         lane_shuttle_right = as.numeric(lane_shuttle_right),
-         sprint_3_4_court = as.numeric(sprint_3_4_court),
-         lane_agility = as.numeric(lane_agility),
-         vertical_max = as.numeric(str_remove(vertical_max, pattern = "''")),   #, ## need to strip the quotation mark
-         vertical_nostep = as.numeric(str_remove(vertical_nostep, "''"))) %>% ## need to strip the quotation mark
-  
-  
-  select(-college_name, -height_with_shoes, -height_without_shoes, -wingspan_dimensions) 
+  mutate(c_val_HandWid = as.numeric(c_val_HandWid),
+         c_val_HandLen = as.numeric(c_val_HandLen),
+         c_val_BW_lbs = as.numeric(weight),
+         c_val_LaneShut_L = as.numeric(lane_shuttle_left),
+         c_val_LaneShut_R = as.numeric(lane_shuttle_right),
+         c_val_3qrtSpeed = as.numeric(c_val_3qrtSpeed),
+         c_val_LaneAgility = as.numeric(c_val_LaneAgility),
+         c_val_maxVert = as.numeric(str_remove(c_val_maxVert, pattern = "''")),   #, ## need to strip the quotation mark
+         c_val_standMaxVert = as.numeric(str_remove(c_val_standMaxVert, "''"))) %>% ## need to strip the quotation mark
+  select(-college_name, -height_with_shoes, -height_without_shoes, -wingspan_dimensions,
+         -body_fat, -weight, -standing_reach, -lane_shuttle_left, -lane_shuttle_right,
+         -height_noshoes) %>%
+  mutate(c_val_WingHt = c_val_Wing - c_val_Ht_wo_shoes,
+         c_val_JumpHt = c_val_maxVert - c_val_StandReach)
 
+  ## rename variables to combine specific varnames for consistency with historical combine
 
 write.csv(d_processed, file = 'combine2022Cleaned.csv', row.names = F)
 
