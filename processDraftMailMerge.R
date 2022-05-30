@@ -1,4 +1,4 @@
-## script to read data from data input file and reformat for mail merge template
+##script to read data from data input file and reformat for mail merge template
 
 require(tidyverse)
 require(openxlsx)
