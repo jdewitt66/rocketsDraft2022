@@ -7,11 +7,11 @@ require(openxlsx)
 inP <- '../../data/Rockets_Draft_2022'
 fn <- "2022_Rockets_Draft_Data_Sheet .xlsx"   
 
-df_anthro <- read.xlsx(file.path(inP, fn), detectDates = T) %>%
+df_anthro_in <- read.xlsx(file.path(inP, fn), detectDates = T) %>%
   janitor::clean_names()
 
 ## create output anthro dataframe with new variable names that match mail merge
-df_anthro %>%
+df_anthro <- df_anthro_in %>%
   mutate(Fullname = paste(first_name, last_name),
          r_val_WingHt = wingspan - height_no_shoes,) %>%
   rename(r_val_Ht_wo_shoes = height_no_shoes, 
@@ -34,7 +34,8 @@ df_anthro %>%
          r_val_LMM = lean_muscle_mass,
          val_ProLaneAgility_R = pro_lane_agility_r,
          val_ProLaneAgility__L = pro_lane_agility_l) %>%
-  mutate(r_val_qb_imbalance = ((r_val_QB_R / r_val_QB_L) - 1) *100)
+  mutate(r_val_qb_imbalance = ((r_val_QB_R / r_val_QB_L) - 1) *100,
+         r_val_JumpHt = r_val_StandReach - r_val_maxVert)
 
 
 
@@ -46,7 +47,7 @@ df_anthro %>%
 # r_pct_Wing
 
 # r_pct_Wing_Ht
-# r_val_JumpHt
+# 
 # r_pct_jumpHt
 # 
 # r_pct_stantMaxVert
