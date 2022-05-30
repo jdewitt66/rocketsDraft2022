@@ -2,6 +2,7 @@
 
 require(tidyverse)
 require(openxlsx)
+source('procGetHistoricalCombine.R')
 
 ## 1) Get the performance data file from the data folder ----
 inP <- '../../data/Rockets_Draft_2022'
@@ -82,29 +83,34 @@ df_anthro <- df_anthro_in %>%
 
 ## 2) Get historical combine data
 fn <- "nba-combine-historical-through-2021-results.csv"
+df_combine_hist <- getHistoricalCombine(inPath = inP, fileN = fn)
+
+## 3) Get this year's combine data
+df_combine_2022 <- read.csv('combine2022Cleaned.csv', 
+                            stringsAsFactors = F)
 df_combine <- read.csv(file.path(inP, fn), stringsAsFactors = F)
 
-dd <- df_combine %>%
-  rename(c_val_Ht_wo_shoes = height_noshoes,
-         c_val_StandReach = standing_reach,
-         c_val_Wing = wingspan,
-         c_val_standMaxVert = vertical_nostep,
-         c_val_maxVert = vertical_max,
-         c_val_BW_lbs = weight,
-         c_val_Bfat_pct = body_fat_pct,
-         c_val_HandLen = hand_length,
-         c_val_HandWid = hand_width,
-         c_val_LaneShut_R = lane_shuttle_right,
-         c_val_LaneShut_L = lane_shuttle_left,
-         c_val_LaneAgility = lane_agility,
-         c_val_3qrtSpeed = sprint_3_4_court) %>%
-  select(first_name, last_name, testing_year, position,
-         contains('c_val')) %>%
-  mutate_at(vars(matches('c_val')), as.numeric)
-
-# [1] ""                  ""                  
-# [3] "league_code"                 "start_year"                 
-# [5] ""                    "is_inside"                  
+# dd <- df_combine %>%
+#   rename(c_val_Ht_wo_shoes = height_noshoes,
+#          c_val_StandReach = standing_reach,
+#          c_val_Wing = wingspan,
+#          c_val_standMaxVert = vertical_nostep,
+#          c_val_maxVert = vertical_max,
+#          c_val_BW_lbs = weight,
+#          c_val_Bfat_pct = body_fat_pct,
+#          c_val_HandLen = hand_length,
+#          c_val_HandWid = hand_width,
+#          c_val_LaneShut_R = lane_shuttle_right,
+#          c_val_LaneShut_L = lane_shuttle_left,
+#          c_val_LaneAgility = lane_agility,
+#          c_val_3qrtSpeed = sprint_3_4_court) %>%
+#   select(first_name, last_name, testing_year, position,
+#          contains('c_val')) %>%
+#   mutate_at(vars(matches('c_val')), as.numeric)
+# 
+# # [1] ""                  ""                  
+# # [3] "league_code"                 "start_year"                 
+# # [5] ""                    "is_inside"                  
 # [7] "player_id"                   "testing_event_id"           
 # [9] ""                "testing_instance"           
 # [11] "height_shoes"                ""             
