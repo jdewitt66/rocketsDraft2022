@@ -31,13 +31,15 @@ df_combine <-
 #computePctTile(vname = vName, combine_DF = df_combine, inVal)
 
 # function to compute percentile of a given score
-computePctTile <- function(vname, combine_DF, inVal) {
+computePctTile <- function(X, inVal) {
   # adjust variable name
-  newVname = substring(vname,3)
+#  newVname = paste0('c_',substring(vname,3))
   # pull combine scores for the variable name, eliminate NA
-  X <- combine_DF %>% 
-    filter(varName == paste0('c_',newVname)) %>%
-    select(value) %>% na.omit() %>% pull()
+  #X <- combine_DF %>% 
+  #    filter(varName == !!sym(newVname))  %>%
+  #X = X1[,'value']#%>%
+  #  select(value) %>%  na.omit %>% pull()
+ # X = combine_DF[[combine_DF$varName == !!(sym(newVname)), 'value']]
   # find the ranke of the current input value in the vector of all values
   thisRank = rank(c(inVal, X), na.last = NA, ties.method = "first")[1] 
   # compute percentile
@@ -45,6 +47,8 @@ computePctTile <- function(vname, combine_DF, inVal) {
   return(pctTile)
 }
 
+# Vectorized function
+computePctTile_V = Vectorize(computePctTile)
 ## 2) Get the performance data file from the data folder ----
 
 fn <- "2022_Rockets_Draft_Data_Sheet .xlsx"   
@@ -77,9 +81,21 @@ df_anthro <- df_anthro_in %>%
          val_ProLaneAgility_R = pro_lane_agility_r,
          val_ProLaneAgility__L = pro_lane_agility_l) %>%
   mutate(r_val_qb_imbalance = ((r_val_QB_R / r_val_QB_L) - 1) *100,
-         r_val_JumpHt = r_val_StandReach - r_val_maxVert)
+         r_val_JumpHt = r_val_StandReach - r_val_maxVert) #%>%
+  ## percentiles
+# df_anthro %>%
+ mutate(df_anthro, r_pct_Ht_wo_shoes = computePctTile_v(vname = 'c_val_Ht_wo_shoes', 
+                                                        combine_DF = df_combine,
+                                                        inVal = 175))
+ inD = df_combine[df_combine$varName == 'c_val_Ht_wo_shoes', 'value']
+ df_anthro$c_pct_val_Ht_wo_shoes = computePctTile_V(inD, 175)
 
 
+          X1 <- combine_DF %>% 
+      dplyr::filter(varName == 'c_val_Ht_wo_shoes') 
+ computePctTile_V(vname = 'c_val_Ht_wo_shoes', 
+                  combine_DF = df_combine,
+                  inVal = 175)
 
 # 
 # r_pct_Ht_wo_shoes
