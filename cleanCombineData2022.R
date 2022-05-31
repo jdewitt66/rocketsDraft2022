@@ -80,7 +80,7 @@ d_processed <-
          -body_fat, -weight, -standing_reach, -lane_shuttle_left, -lane_shuttle_right,
          -height_noshoes) %>%
   mutate(c_val_WingHt = c_val_Wing - c_val_Ht_wo_shoes,
-         c_val_JumpHt = c_val_maxVert - c_val_StandReach)
+         c_val_JumpHt = c_val_maxVert + c_val_StandReach)
 
   ## rename variables to combine specific varnames for consistency with historical combine
 
