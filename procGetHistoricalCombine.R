@@ -6,7 +6,7 @@ getHistoricalCombine <- function(inPath = inP, fileN = fn) {
   ## Get historical combine data
   #inPath <- '../../data/Rockets_Draft_2022'
   #fileN <- "nba-combine-historical-through-2021-results.csv"
-  df_combine <- read.csv(file.path(inP, fn), stringsAsFactors = F)
+  df_combine <- read.csv(file.path(inP, fileN), stringsAsFactors = F)
   
   dd <- df_combine %>%
     # rename to combine specific values
@@ -35,7 +35,7 @@ getHistoricalCombine <- function(inPath = inP, fileN = fn) {
     mutate_at(vars(matches('c_val')), as.numeric) %>%
     mutate(
       c_val_WingHt = c_val_Wing - c_val_Ht_wo_shoes,
-      c_val_JumpHt = c_val_standMaxVert - c_val_StandReach
+      c_val_JumpHt = c_val_standMaxVert + c_val_StandReach
     )
   
   return(dd)
