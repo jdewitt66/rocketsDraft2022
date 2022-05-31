@@ -1,5 +1,8 @@
 ## script to get historical jump data and create a master file for 
 ## use with determining percentiles
+##
+## creates 
+##    write.csv(d_all, file = 'allHistoricalJumpData.csv', row.names = F)
 
 d.all <- read.csv('../forceDecksHou/allHouForceDecksData.csv', 
                   stringsAsFactors = F) %>% 
@@ -52,9 +55,37 @@ d_dj <-
 ## pct_SL_EccMean
 ##
 ## get slj from 2021-2022 folder
+inP <- '../../data/2021_2022 Data/2021_2022 Force Decks Data'
+sljFile = "SLJ_TEAM_Historical.xlsx"
+read.xlsx(file.path(inP, "SLJ_TEAM_Historical.xlsx"  ), detectDates = T)
 
+d_slj_all <- NULL
+for(sljFile in dir(inP, pattern = 'SLJ')) {
 d_slj <- 
-  d.all %>%
-  filter(type == "Single Leg Jump",
-         varName %in% c("eccentric_mean_force_n")) %>%
-  na.omit() 
+  read.xlsx(file.path(inP, sljFile), detectDates = T,
+            startRow = 8) %>%
+  janitor::clean_names() %>%
+  mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
+  select(athlete, test_type, test_date, body_weight_kg, trial,
+         eccentric_mean_force_n) %>%
+  mutate(body_weight_kg = as.numeric(body_weight_kg)) %>%
+  mutate(eccentric_mean_force_n_kg = eccentric_mean_force_n / body_weight_kg) %>%
+  separate(trial, c('leg', 'trial')) %>%
+  gather(varName, value, -athlete, -test_type, -test_date, -leg) %>%
+  filter(varName != 'trial') %>%
+  mutate(value = as.numeric(value)) %>%
+  group_by(athlete, test_type, test_date, leg, varName) %>%
+  summarise(meanVal = mean(value)) %>%
+  ungroup() %>% unite('varName', c(leg,varName)) %>% 
+  spread(varName, meanVal) %>%
+  rename(Name = athlete, type = test_type, date = test_date) %>%
+  mutate(Name = trimws(Name))
+
+d_slj_all <- bind_rows(d_slj_all, d_slj)
+} 
+d_slj_all <- d_slj_all %>%
+  gather(varName, value, -Name, -type, -date)
+
+d_all <- bind_rows(d_c, d_dj, d_slj_all)
+
+write.csv(d_all, file = 'allHistoricalJumpData.csv', row.names = F)
