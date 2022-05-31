@@ -119,9 +119,6 @@ for (r in seq(1, nrow(df_anthro))) {
   inD = df_combine[df_combine$varName == 'c_val_HandWid', 'value']
   r_pct_HandWid = computePctTile(inD, this_ath$r_val_HandWid)
   
-  inD = df_combine[df_combine$varName == 'c_val_HandWid', 'value']
-  r_pct_HandWid = computePctTile(inD, this_ath$r_val_HandWid)
-  
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_R', 'value']
   r_pct_LaneShut_R = computePctTile(inD, this_ath$r_val_LaneShut_R, higher_better = F)
   
