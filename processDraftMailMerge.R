@@ -155,6 +155,8 @@ for (r in seq(1, nrow(df_anthro))) {
 write.xlsx(allOut, file = 'docs/draft2022CompiledData.xlsx')
 
 ## 2) Get Jump data -----
+df_force_hist <- read.csv(file = 'allHistoricalJumpData.csv', stringsAsFactors = F)
+
 forceFolder = 'ForceDecks'
 
 ## 2a) CMJ data
