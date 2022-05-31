@@ -55,108 +55,103 @@ df_anthro <- df_anthro_in %>%
          r_val_QB = quickboard_total,
          r_val_QB_L = quickboard_l,
          r_val_QB_R = quickboard_r,
-         r_val_LMM = lean_muscle_mass,
-         val_ProLaneAgility_R = pro_lane_agility_r,
-         val_ProLaneAgility__L = pro_lane_agility_l) %>%
+    #     val_ProLaneAgility_R = pro_lane_agility_r,
+    #     val_ProLaneAgility_L = pro_lane_agility_l,
+         r_val_LMM = lean_muscle_mass
+       ) %>%
   mutate(r_val_qb_imbalance = ((r_val_QB_R / r_val_QB_L) - 1) *100,
-         r_val_JumpHt = r_val_StandReach - r_val_maxVert) 
+         r_val_JumpHt = r_val_StandReach + r_val_maxVert) 
 
 ## 3) go through row by row and add percentile relative to overall combine data
-#inVal = 250
-#vName = 'r_val_BW_lbs'
-#computePctTile(vname = vName, combine_DF = df_combine, inVal)
 
 # function to compute percentile of a given score
-computePctTile <- function(inCombine, inVal) {
+computePctTile <- function(inCombine, inVal, higher_better = TRUE) {
   inCombine = inCombine[!is.na(inCombine)]
-  pctTile = sum(inVal > inCombine) / length(inCombine) * 100
+  if(higher_better) {
+    # compute %tile where higher value is better
+    pctTile = sum(inVal > inCombine) / length(inCombine) * 100
+  } else {
+    # compute %tile where lower value is better
+    pctTile = sum(inVal < inCombine) / length(inCombine) * 100
+  }
   return(round(pctTile,2))
 }
 
-
-r = 1
-fName = df_anthro$first_name[r]
-lName = df_anthro$last_name[r]
-this_ath <- df_anthro %>% filter(first_name == fName &
-                                   last_name == lName)
-
- inD = df_combine[df_combine$varName == 'c_val_Ht_wo_shoes', 'value']
- r_pct_Ht_wo_shoes = computePctTile(inD, this_ath$r_val_Ht_wo_shoes)
-
-
-          
-# 
-# r_pct_Ht_wo_shoes
-# 
-# r_pct_StandReach
-# 
-# r_pct_Wing
-
-# r_pct_Wing_Ht
-# 
-# r_pct_jumpHt
-# 
-# r_pct_stantMaxVert
-# 
-# r_pct_MaxVert
-# 
-# r_pct_BW_lbs
-# 
-# r_pct_Bfat_pct
-# 
-# r_pct_HandLen
-# 
-# r_pct_HandWid
-# 
-# r_pct_LaneShut_R
-# 
-# r_pct_LaneShut_L
-# 
-# r_pct_LaneAgility
-# r_val_3qrtSpeed
-# r_pct_3qrtSpeed
-# 
-# r_pct_3qrtRock
-# 
-# r_pct_QB
-# 
-# r_pct_10m
-# 
-# r_pct_shutLRock
-# 
-# r_pct_shutRRock
-
-
-# 
-# c_pct_Ht_wo_shoes
-# 
-# c_pct_StandReach
-# 
-# c_pct_Wing
-# c_val_WingHt
-# c_pct_Wing_Ht
-# c_val_JumpHt
-# c_pct_jumpHt
-# 
-# c_pct_standMaxVert
-# 
-# c_pct_MaxVert
-# 
-# c_pct_BW_lbs
-# 
-# c_pct_Bfat_pct
-# 
-# c_pct_HandLen
-# 
-# c_pct_HandWid
-# 
-# c_pct_LaneShut_R
-# 
-# c_pct_LaneShut_L
-# 
-# c_pct_LaneAgility
-# 
-# c_pct_3qrtSpeed
+# percentile computation
+allOut <- NULL
+for (r in seq(1, nrow(df_anthro))) {
+  fName = df_anthro$first_name[r]
+  lName = df_anthro$last_name[r]
+  this_ath <- df_anthro %>% filter(first_name == fName &
+                                     last_name == lName)
+  
+  inD = df_combine[df_combine$varName == 'c_val_Ht_wo_shoes', 'value']
+  r_pct_Ht_wo_shoes = computePctTile(inD, this_ath$r_val_Ht_wo_shoes)
+  
+  inD = df_combine[df_combine$varName == 'c_val_StandReach', 'value']
+  r_pct_StandReach = computePctTile(inD, this_ath$r_val_StandReach)
+  
+  inD = df_combine[df_combine$varName == 'c_val_Wing', 'value']
+  r_pct_Wing = computePctTile(inD, this_ath$r_val_Wing)
+  
+  inD = df_combine[df_combine$varName == 'c_val_WingHt', 'value']
+  r_pct_WingHt = computePctTile(inD, this_ath$r_val_WingHt)
+  
+  inD = df_combine[df_combine$varName == 'c_val_JumpHt', 'value']
+  r_pct_JumpHt = computePctTile(inD, this_ath$r_val_JumpHt)
+  
+  inD = df_combine[df_combine$varName == 'c_val_standMaxVert', 'value']
+  r_pct_standMaxVert = computePctTile(inD, this_ath$r_val_standMaxVert)
+  
+  inD = df_combine[df_combine$varName == 'c_val_maxVert', 'value']
+  r_pct_maxVert = computePctTile(inD, this_ath$r_val_maxVert)
+  
+  inD = df_combine[df_combine$varName == 'c_val_BW_lbs', 'value']
+  r_pct_BW_lbs = computePctTile(inD, this_ath$r_val_BW_lbs)
+  
+  inD = df_combine[df_combine$varName == 'c_val_Bfat_pct', 'value']
+  r_pct_Bfat_pct = computePctTile(inD, this_ath$r_val_Bfat_pct, higher_better = FALSE)
+  
+  inD = df_combine[df_combine$varName == 'c_val_HandLen', 'value']
+  r_pct_HandLen = computePctTile(inD, this_ath$r_val_HandLen)
+  
+  inD = df_combine[df_combine$varName == 'c_val_HandWid', 'value']
+  r_pct_HandWid = computePctTile(inD, this_ath$r_val_HandWid)
+  
+  inD = df_combine[df_combine$varName == 'c_val_HandWid', 'value']
+  r_pct_HandWid = computePctTile(inD, this_ath$r_val_HandWid)
+  
+  inD = df_combine[df_combine$varName == 'c_val_LaneShut_R', 'value']
+  r_pct_LaneShut_R = computePctTile(inD, this_ath$r_val_LaneShut_R, higher_better = F)
+  
+  inD = df_combine[df_combine$varName == 'c_val_LaneShut_L', 'value']
+  r_pct_LaneShut_L = computePctTile(inD, this_ath$r_val_LaneShut_L, higher_better = F)
+  
+  inD = df_combine[df_combine$varName == 'c_val_3qrtSpeed', 'value']
+  r_pct_3qrtRock = computePctTile(inD, this_ath$r_val_3qrtRock, higher_better = F)
+  
+  this_ath <- cbind(
+    this_ath,
+    data.frame(
+      r_pct_Ht_wo_shoes,
+      r_pct_StandReach,
+      r_pct_Wing,
+      r_pct_WingHt,
+      r_pct_JumpHt,
+      r_pct_standMaxVert,
+      r_pct_maxVert,
+      r_pct_BW_lbs,
+      r_pct_Bfat_pct,
+      r_pct_HandLen,
+      r_pct_HandWid,
+      r_pct_HandWid,
+      r_pct_LaneShut_R,
+      r_pct_LaneShut_L,
+      r_pct_3qrtRock
+    )
+  )
+  allOut <- bind_rows(allOut, this_ath)
+}
 
 ## 2) Get Jump data -----
 forceFolder = 'ForceDecks'
