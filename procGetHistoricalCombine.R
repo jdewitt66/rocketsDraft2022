@@ -33,9 +33,12 @@ getHistoricalCombine <- function(inPath = inP, fileN = fn) {
            contains('c_val')) %>%
     # convert any data files to numeric
     mutate_at(vars(matches('c_val')), as.numeric) %>%
+    # change bfat from decimal to %
+    # compute wingh height diff and jump ht
     mutate(
       c_val_WingHt = c_val_Wing - c_val_Ht_wo_shoes,
-      c_val_JumpHt = c_val_standMaxVert + c_val_StandReach
+      c_val_JumpHt = c_val_standMaxVert + c_val_StandReach,
+      c_val_Bfat_pct = c_val_Bfat_pct * 100
     )
   
   return(dd)
