@@ -34,10 +34,11 @@ d_c <- d.all %>%
                         "peak_power_bm_w_kg","peak_power_w" ,"rsi_modified_m_s")
   ) %>%
   spread(varName, value) %>%
-  mutate(body_wt_kg2 = ifelse(is.na(body_weight_kg), peak_power_w / peak_power_bm_w_kg,
+  mutate(body_wt_kg = ifelse(is.na(body_weight_kg), peak_power_w / peak_power_bm_w_kg,
                               body_weight_kg)) %>%
-  select(-body_weight_kg) %>%
   na.omit() %>%
+  mutate(concentric_impulse_ns_kg = concentric_impulse_ns / body_weight_kg,
+         force_at_zero_velocity_n_kg = force_at_zero_velocity_n / body_weight_kg)
   gather(varName, value, -Name, -type, -date)
 
 ## val_DJ_CT
@@ -48,9 +49,10 @@ d_c <- d.all %>%
 d_dj <- 
   d.all %>%
   filter(type == "Drop Jump",
-         varName %in% c("flight_time_contraction_time", "rsi_jh_flight_time_contact_time_m_s")) %>%
+         varName %in% c("contact_time_s","rsi_flight_time_contact_time")) %>%
   na.omit() 
   
+d_dj %>% group_by(varName) %>% summarize(n= n())
 ## val_SL_EccMean
 ## pct_SL_EccMean
 ##
