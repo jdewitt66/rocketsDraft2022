@@ -185,13 +185,15 @@ read.xlsx(file.path(inP, forceFolder, cmjFile), detectDates = T,
   mutate(concentric_impulse_ns_kg = concentric_impulse_ns / body_weight_kg,
          force_at_zero_velocity_n_kg = force_at_zero_velocity_n / body_weight_kg)
 
-d_cmj %>%
+d_cmj2 <- d_cmj %>%
   gather(varName, value, -athlete, -test_type, -test_date) %>%
   filter(varName != 'trial') %>%
   mutate(value = as.numeric(value)) %>%
   group_by(athlete, test_type, test_date, varName) %>%
   summarise(meanVal = mean(value)) %>%
-  ungroup() %>% spread(varName, meanVal)
+  ungroup() %>% spread(varName, meanVal) %>%
+  rename(Name = athlete,
+         type = test_type, date = test_date)
   
 ## 2b) DJ data
 ## Drop Jump variables
@@ -208,13 +210,14 @@ d_dj <-
   select(athlete, test_type, test_date, body_weight_kg, trial,
          contact_time_s, rsi_flight_time_contact_time)
 
-d_dj %>%
+d_dj <- d_dj %>%
   gather(varName, value, -athlete, -test_type, -test_date) %>%
   filter(varName != 'trial') %>%
   mutate(value = as.numeric(value)) %>%
   group_by(athlete, test_type, test_date, varName) %>%
   summarise(meanVal = mean(value)) %>%
-  ungroup() %>% spread(varName, meanVal)
+  ungroup() %>% spread(varName, meanVal) %>%
+  rename(Name = athlete, type = test_type, date = test_date)
 
 ## 2c) SLJ data
 ## SLJ variables
@@ -231,11 +234,14 @@ d_slj <-
       mutate(eccentric_mean_force_n_kg = eccentric_mean_force_n / body_weight_kg) %>%
     separate(trial, c('leg', 'trial')) 
 
-d_slj %>%
+d_slj <- d_slj %>%
   gather(varName, value, -athlete, -test_type, -test_date, -leg) %>%
   filter(varName != 'trial') %>%
   mutate(value = as.numeric(value)) %>%
   group_by(athlete, test_type, test_date, leg, varName) %>%
   summarise(meanVal = mean(value)) %>%
   ungroup() %>% unite('varName', c(leg,varName)) %>% 
-  spread(varName, meanVal)
+  spread(varName, meanVal) %>%
+  rename(Name = athlete,
+         type = test_type,
+         date - test_date)
