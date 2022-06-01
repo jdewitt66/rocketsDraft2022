@@ -177,18 +177,22 @@ for (r in seq(1, nrow(df_anthro))) {
   
   inD = df_combine[df_combine$varName == 'c_val_Ht_wo_shoes', 'value']
   r_pct_Ht_wo_shoes = computePctTile(inD, this_ath$r_val_Ht_wo_shoes)
+  r_val_Ht_wo_shoes_chr <- paste0(this_ath$r_val_Ht_wo_shoes%/%12,"'",this_ath$r_val_Ht_wo_shoes%%12)
   
   inD = df_combine[df_combine$varName == 'c_val_StandReach', 'value']
   r_pct_StandReach = computePctTile(inD, this_ath$r_val_StandReach)
+  r_val_StandReach_chr <- paste0(this_ath$r_val_StandReach%/%12,"'",this_ath$r_val_StandReach%%12)
   
   inD = df_combine[df_combine$varName == 'c_val_Wing', 'value']
   r_pct_Wing = computePctTile(inD, this_ath$r_val_Wing)
+  r_val_Wing_chr <- paste0(this_ath$r_val_Wing%/%12,"'",this_ath$r_val_Wing%%12)
   
   inD = df_combine[df_combine$varName == 'c_val_WingHt', 'value']
   r_pct_WingHt = computePctTile(inD, this_ath$r_val_WingHt)
   
   inD = df_combine[df_combine$varName == 'c_val_JumpHt', 'value']
   r_pct_JumpHt = computePctTile(inD, this_ath$r_val_JumpHt)
+  r_val_JumpHt_chr <- paste0(this_ath$r_val_JumpHt%/%12,"'",this_ath$r_val_JumpHt%%12)
   
   inD = df_combine[df_combine$varName == 'c_val_standMaxVert', 'value']
   r_pct_standMaxVert = computePctTile(inD, this_ath$r_val_standMaxVert)
@@ -295,10 +299,14 @@ for (r in seq(1, nrow(df_anthro))) {
     this_ath,
     data.frame(
       r_pct_Ht_wo_shoes,
+      r_val_Ht_wo_shoes_chr,
       r_pct_StandReach,
+      r_val_StandReach_chr,
       r_pct_Wing,
+      r_val_Wing_chr,
       r_pct_WingHt,
       r_pct_JumpHt,
+      r_val_JumpHt_chr,
       r_pct_standMaxVert,
       r_pct_maxVert,
       r_pct_BW_lbs,
