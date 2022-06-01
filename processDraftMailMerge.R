@@ -63,7 +63,93 @@ df_anthro <- df_anthro_in %>%
   mutate(r_val_qb_imbalance = ((r_val_QB_R / r_val_QB_L) - 1) *100,
          r_val_JumpHt = r_val_StandReach + r_val_maxVert) 
 
-## 3) go through row by row and add percentile relative to overall combine data
+## 3) Get Rocket Jump data -----
+df_force_hist <- read.csv(file = 'allHistoricalJumpData.csv', stringsAsFactors = F)
+
+forceFolder = 'ForceDecks'
+
+## 2a) CMJ data
+## CMJ variables:
+# val_CM_conImp
+# pct_CM_comImp
+# val_CM_fzero
+# pct_CM_fzero
+# val_CM_relPP
+# pct_CM_relPP
+# val_CM_PP
+# pct_CM_PP
+# val_CM_RSImod
+# pct_CM_RSImod
+cmjFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'CMJ')
+
+d_cmj_rocket <- 
+  read.xlsx(file.path(inP, forceFolder, cmjFile), detectDates = T,
+            startRow = 8) %>%
+  janitor::clean_names() %>%
+  mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
+  select(athlete, test_type, test_date, body_weight_kg, trial,
+         concentric_impulse_ns, force_at_zero_velocity_n, peak_power_bm_w_kg,
+         peak_power_w,rsi_modified_m_s) %>%
+  filter(rsi_modified_m_s < 2) %>%
+  mutate(concentric_impulse_ns_kg = concentric_impulse_ns / body_weight_kg,
+         force_at_zero_velocity_n_kg = force_at_zero_velocity_n / body_weight_kg) %>%
+  gather(varName, value, -athlete, -test_type, -test_date) %>%
+  filter(varName != 'trial') %>%
+  mutate(value = as.numeric(value)) %>%
+  group_by(athlete, test_type, test_date, varName) %>%
+  summarise(meanVal = mean(value)) %>%
+  ungroup() %>% spread(varName, meanVal) %>%
+  rename(fullname = athlete,
+         type = test_type, date = test_date)
+
+## 3b) DJ data
+## Drop Jump variables
+## val_DJ_CT
+## pct_DJ_CT
+## val_DJ_RSI
+## pct_DJ_RSI
+djFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'DJ')
+d_dj_rocket <- 
+  read.xlsx(file.path(inP, forceFolder, djFile), detectDates = T,
+            startRow = 8) %>%
+  janitor::clean_names() %>%
+  mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
+  select(athlete, test_type, test_date, body_weight_kg, trial,
+         contact_time_s, rsi_flight_time_contact_time) %>%
+  gather(varName, value, -athlete, -test_type, -test_date) %>%
+  filter(varName != 'trial') %>%
+  mutate(value = as.numeric(value)) %>%
+  group_by(athlete, test_type, test_date, varName) %>%
+  summarise(meanVal = mean(value)) %>%
+  ungroup() %>% spread(varName, meanVal) %>%
+  rename(fullname = athlete, type = test_type, date = test_date)
+
+## 3c) SLJ data
+## SLJ variables
+## val_SL_EccMean
+## pct_SL_EccMean
+sljFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'SLJ')
+d_slj_rocket <- 
+  read.xlsx(file.path(inP, forceFolder, sljFile), detectDates = T,
+            startRow = 8) %>%
+  janitor::clean_names() %>%
+  mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
+  select(athlete, test_type, test_date, body_weight_kg, trial,
+         eccentric_mean_force_n) %>%
+  mutate(eccentric_mean_force_n_kg = eccentric_mean_force_n / body_weight_kg) %>%
+  separate(trial, c('leg', 'trial'))  %>%
+  gather(varName, value, -athlete, -test_type, -test_date, -leg) %>%
+  filter(varName != 'trial') %>%
+  mutate(value = as.numeric(value)) %>%
+  group_by(athlete, test_type, test_date, leg, varName) %>%
+  summarise(meanVal = mean(value, na.rm = T)) %>%
+  ungroup() %>% unite('varName', c(leg,varName)) %>% 
+  spread(varName, meanVal) %>%
+  rename(fullname = athlete,
+         type = test_type,
+         date = test_date)
+
+## 4) go through row by row and add percentile relative to overall combine data and historical jump data ----
 
 # function to compute percentile of a given score
 computePctTile <- function(inCombine, inVal, higher_better = TRUE) {
@@ -151,97 +237,91 @@ for (r in seq(1, nrow(df_anthro))) {
   allOut <- bind_rows(allOut, this_ath)
 }
 
-## write to excel file
+## 5) write to excel file
 write.xlsx(allOut, file = 'docs/draft2022CompiledData.xlsx')
 
-## 2) Get Jump data -----
-df_force_hist <- read.csv(file = 'allHistoricalJumpData.csv', stringsAsFactors = F)
-
-forceFolder = 'ForceDecks'
-
-## 2a) CMJ data
-## CMJ variables:
-# val_CM_conImp
-# pct_CM_comImp
-# val_CM_fzero
-# pct_CM_fzero
-# val_CM_relPP
-# pct_CM_relPP
-# val_CM_PP
-# pct_CM_PP
-# val_CM_RSImod
-# pct_CM_RSImod
-cmjFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'CMJ')
-
-d_cmj <- 
-read.xlsx(file.path(inP, forceFolder, cmjFile), detectDates = T,
-          startRow = 8) %>%
-  janitor::clean_names() %>%
-  mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
-  select(athlete, test_type, test_date, body_weight_kg, trial,
-         concentric_impulse_ns, force_at_zero_velocity_n, peak_power_bm_w_kg,
-         peak_power_w,rsi_modified_m_s) %>%
-  filter(rsi_modified_m_s < 2) %>%
-  mutate(concentric_impulse_ns_kg = concentric_impulse_ns / body_weight_kg,
-         force_at_zero_velocity_n_kg = force_at_zero_velocity_n / body_weight_kg)
-
-d_cmj2 <- d_cmj %>%
-  gather(varName, value, -athlete, -test_type, -test_date) %>%
-  filter(varName != 'trial') %>%
-  mutate(value = as.numeric(value)) %>%
-  group_by(athlete, test_type, test_date, varName) %>%
-  summarise(meanVal = mean(value)) %>%
-  ungroup() %>% spread(varName, meanVal) %>%
-  rename(Name = athlete,
-         type = test_type, date = test_date)
-  
-## 2b) DJ data
-## Drop Jump variables
-## val_DJ_CT
-## pct_DJ_CT
-## val_DJ_RSI
-## pct_DJ_RSI
-djFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'DJ')
-d_dj <- 
-  read.xlsx(file.path(inP, forceFolder, djFile), detectDates = T,
-          startRow = 8) %>%
-  janitor::clean_names() %>%
-  mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
-  select(athlete, test_type, test_date, body_weight_kg, trial,
-         contact_time_s, rsi_flight_time_contact_time)
-
-d_dj <- d_dj %>%
-  gather(varName, value, -athlete, -test_type, -test_date) %>%
-  filter(varName != 'trial') %>%
-  mutate(value = as.numeric(value)) %>%
-  group_by(athlete, test_type, test_date, varName) %>%
-  summarise(meanVal = mean(value)) %>%
-  ungroup() %>% spread(varName, meanVal) %>%
-  rename(Name = athlete, type = test_type, date = test_date)
-
-## 2c) SLJ data
-## SLJ variables
-## val_SL_EccMean
-## pct_SL_EccMean
-sljFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'SLJ')
-d_slj <- 
-  read.xlsx(file.path(inP, forceFolder, sljFile), detectDates = T,
-            startRow = 8) %>%
-  janitor::clean_names() %>%
-  mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
-    select(athlete, test_type, test_date, body_weight_kg, trial,
-           eccentric_mean_force_n) %>%
-      mutate(eccentric_mean_force_n_kg = eccentric_mean_force_n / body_weight_kg) %>%
-    separate(trial, c('leg', 'trial')) 
-
-d_slj <- d_slj %>%
-  gather(varName, value, -athlete, -test_type, -test_date, -leg) %>%
-  filter(varName != 'trial') %>%
-  mutate(value = as.numeric(value)) %>%
-  group_by(athlete, test_type, test_date, leg, varName) %>%
-  summarise(meanVal = mean(value)) %>%
-  ungroup() %>% unite('varName', c(leg,varName)) %>% 
-  spread(varName, meanVal) %>%
-  rename(Name = athlete,
-         type = test_type,
-         date - test_date)
+# ## 2) Get Rocket Jump data -----
+# df_force_hist <- read.csv(file = 'allHistoricalJumpData.csv', stringsAsFactors = F)
+# 
+# forceFolder = 'ForceDecks'
+# 
+# ## 2a) CMJ data
+# ## CMJ variables:
+# # val_CM_conImp
+# # pct_CM_comImp
+# # val_CM_fzero
+# # pct_CM_fzero
+# # val_CM_relPP
+# # pct_CM_relPP
+# # val_CM_PP
+# # pct_CM_PP
+# # val_CM_RSImod
+# # pct_CM_RSImod
+# cmjFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'CMJ')
+# 
+# d_cmj_rocket <- 
+# read.xlsx(file.path(inP, forceFolder, cmjFile), detectDates = T,
+#           startRow = 8) %>%
+#   janitor::clean_names() %>%
+#   mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
+#   select(athlete, test_type, test_date, body_weight_kg, trial,
+#          concentric_impulse_ns, force_at_zero_velocity_n, peak_power_bm_w_kg,
+#          peak_power_w,rsi_modified_m_s) %>%
+#   filter(rsi_modified_m_s < 2) %>%
+#   mutate(concentric_impulse_ns_kg = concentric_impulse_ns / body_weight_kg,
+#          force_at_zero_velocity_n_kg = force_at_zero_velocity_n / body_weight_kg) %>%
+#   gather(varName, value, -athlete, -test_type, -test_date) %>%
+#   filter(varName != 'trial') %>%
+#   mutate(value = as.numeric(value)) %>%
+#   group_by(athlete, test_type, test_date, varName) %>%
+#   summarise(meanVal = mean(value)) %>%
+#   ungroup() %>% spread(varName, meanVal) %>%
+#   rename(fullname = athlete,
+#          type = test_type, date = test_date)
+#   
+# ## 2b) DJ data
+# ## Drop Jump variables
+# ## val_DJ_CT
+# ## pct_DJ_CT
+# ## val_DJ_RSI
+# ## pct_DJ_RSI
+# djFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'DJ')
+# d_dj_rocket <- 
+#   read.xlsx(file.path(inP, forceFolder, djFile), detectDates = T,
+#           startRow = 8) %>%
+#   janitor::clean_names() %>%
+#   mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
+#   select(athlete, test_type, test_date, body_weight_kg, trial,
+#          contact_time_s, rsi_flight_time_contact_time) %>%
+#   gather(varName, value, -athlete, -test_type, -test_date) %>%
+#   filter(varName != 'trial') %>%
+#   mutate(value = as.numeric(value)) %>%
+#   group_by(athlete, test_type, test_date, varName) %>%
+#   summarise(meanVal = mean(value)) %>%
+#   ungroup() %>% spread(varName, meanVal) %>%
+#   rename(fullname = athlete, type = test_type, date = test_date)
+# 
+# ## 2c) SLJ data
+# ## SLJ variables
+# ## val_SL_EccMean
+# ## pct_SL_EccMean
+# sljFile <- dir(paste(inP, forceFolder, sep ='/'), pattern = 'SLJ')
+# d_slj_rocket <- 
+#   read.xlsx(file.path(inP, forceFolder, sljFile), detectDates = T,
+#             startRow = 8) %>%
+#   janitor::clean_names() %>%
+#   mutate(test_date = janitor::excel_numeric_to_date(test_date)) %>%
+#     select(athlete, test_type, test_date, body_weight_kg, trial,
+#            eccentric_mean_force_n) %>%
+#       mutate(eccentric_mean_force_n_kg = eccentric_mean_force_n / body_weight_kg) %>%
+#     separate(trial, c('leg', 'trial'))  %>%
+#   gather(varName, value, -athlete, -test_type, -test_date, -leg) %>%
+#   filter(varName != 'trial') %>%
+#   mutate(value = as.numeric(value)) %>%
+#   group_by(athlete, test_type, test_date, leg, varName) %>%
+#   summarise(meanVal = mean(value, na.rm = T)) %>%
+#   ungroup() %>% unite('varName', c(leg,varName)) %>% 
+#   spread(varName, meanVal) %>%
+#   rename(fullname = athlete,
+#          type = test_type,
+#          date = test_date)
