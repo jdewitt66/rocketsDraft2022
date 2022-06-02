@@ -24,7 +24,9 @@ df_combine <-
     ,
     df_combine_hist %>%
       gather(varName, value, -first_name, -last_name, -position, -testing_year) 
-  )
+  ) %>%
+  mutate(fullname = paste(first_name, last_name)) %>%
+  select(fullname, everything())
 
 
 ## 2) Get the performance data file from the data folder ----
