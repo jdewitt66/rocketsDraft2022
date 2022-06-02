@@ -172,14 +172,26 @@ for (r in seq(1, nrow(df_anthro))) {
   fName = df_anthro$first_name[r]
   lName = df_anthro$last_name[r]
   fullName = df_anthro$fullname[r]
-  this_ath <- df_anthro %>% filter(first_name == fName &
+  this_ath_rock <- df_anthro %>% filter(first_name == fName &
                                      last_name == lName)
   
-  ## anthro
+  ## get combine data for the current player (if exists)
+  this_ath_combine = 
+    df_combine %>% filter(first_name == fName,
+                          trimws(last_name) == lName) %>%
+    spread(varName, value) %>%
+    select(-position, testing_year)
   
+  ## add combine data to athlete df
+  this_ath <- left_join(this_ath_rock, this_ath_combine)
+  
+  ## anthro (compare with combine and report highest value)
+  ## keep three variables - c = combine, r = rocket, s = max of both (for report)
+  cbnVal = this_ath$c_val_Ht_wo_shoes
+  s_val_Ht_wo_shoes = max(cbnVal,this_ath$r_val_Ht_wo_shoes, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_Ht_wo_shoes', 'value']
-  r_pct_Ht_wo_shoes = computePctTile(inD, this_ath$r_val_Ht_wo_shoes)
-  r_val_Ht_wo_shoes_chr <- paste0(this_ath$r_val_Ht_wo_shoes%/%12,"'",this_ath$r_val_Ht_wo_shoes%%12)
+  s_pct_Ht_wo_shoes = computePctTile(inD,  s_val_Ht_wo_shoes)
+  s_val_Ht_wo_shoes_chr <- paste0(s_val_Ht_wo_shoes%/%12,"'",s_val_Ht_wo_shoes%%12)
   
   inD = df_combine[df_combine$varName == 'c_val_StandReach', 'value']
   r_pct_StandReach = computePctTile(inD, this_ath$r_val_StandReach)
