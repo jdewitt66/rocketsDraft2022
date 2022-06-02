@@ -37,6 +37,8 @@ d_processed <-
   d %>%
   # separate player name
   separate(player_name, c('last_name', 'first_name'), sep = ",")  %>% 
+  mutate(last_name = trimws(last_name),
+         first_name = trimws(first_name)) %>% 
   select(first_name, last_name, everything()) %>% # clean name
   # rename position
   mutate(position = ifelse(position == 'PG', 1,
