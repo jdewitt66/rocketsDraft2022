@@ -340,6 +340,41 @@ for (r in seq(1, nrow(df_anthro))) {
   
   r_SLJ_Sym = round(((r_val_SL_EccMean_R / r_val_SL_EccMean_L) - 1) * 100,2)
   
+  ## add section and total grades
+  avgVertExp = mean(c(s_pct_JumpHt, s_pct_standMaxVert, s_pct_maxVert), na.rm = T)
+  avgCOD = mean(c(s_pct_LaneShut_L, s_pct_LaneShut_R), na.rm = T)
+  avgAcc = mean(c(s_pct_3qrtSpeed), na.rm = T)
+  avgVertForce = mean(c(r_pct_CM_conImp, r_pct_CM_fzero, r_pct_CM_relPP, r_pct_CM_PP, r_pct_CM_RSImod), na.rm = T)
+  avg2ndExpl = mean(c(r_pct_DJ_CT, r_pct_DJ_RSI), na.rm = T)
+  avgAcc2 = mean(s_pct_3qrtSpeed, na.rm = T)
+  avgLat = mean(c(s_pct_LaneShut_L, s_pct_LaneShut_R), na.rm = T)
+  avgStab = NA  # filler until percentiles added
+  avgSLJ = mean(c(r_pct_SL_EccMean_L, r_pct_SL_EccMean_R), na.rm = T)
+  avgCombine = mean(c(avgVertExp, avgCOD, avgAcc), na.rm = T)
+  avgRocket = mean(c(avgVertForce, avg2ndExpl, avgAcc2, avgLat,
+                       avgStab, avgSLJ), na.rm = T)
+  
+  makeRank <- function(x) {
+  ## convert grades to 1-5 scale
+    rank = ifelse(x < 10, 1,
+                ifelse(x >= 10 & x < 30, 2,
+                       ifelse(x >=30 & x<70, 3, 
+                              ifelse(x>=70 & x < 90, 4, 5))))
+    return(rank)
+  }
+  
+  gradeVertExp = makeRank(avgVertExp)
+  gradeCOD = makeRank(avgCOD)
+  gradeAcc = makeRank(avgAcc)
+  gradeVertForce = makeRank(avgVertForce)
+  grade2ndExpl = makeRank(avg2ndExpl)
+  gradeAcc2 = makeRank(avgAcc2)
+  gradeLat = makeRank(avgLat)
+  gradeStab= makeRank(avgStab)
+  gradeSLJ = makeRank(avgSLJ)
+  gradeCombine = makeRank(avgCombine)
+  gradeRocket = makeRank(avgRocket)
+  
   ## output dataframe
   this_ath <- cbind(
     this_ath,
@@ -393,7 +428,18 @@ for (r in seq(1, nrow(df_anthro))) {
       r_pct_SL_EccMean_L,
       r_val_SL_EccMean_R,
       r_pct_SL_EccMean_R,
-      r_SLJ_Sym 
+      r_SLJ_Sym,
+      gradeVertExp, 
+      gradeCOD, 
+      gradeAcc, 
+      gradeVertForce, 
+      grade2ndExpl, 
+      gradeAcc2, 
+      gradeLat, 
+      gradeStab,
+      gradeSLJ, 
+      gradeCombine, 
+      gradeRocket
     ) %>% mutate_if(is.numeric, round, 2)
   )
   
