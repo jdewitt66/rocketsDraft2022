@@ -193,47 +193,76 @@ for (r in seq(1, nrow(df_anthro))) {
   s_pct_Ht_wo_shoes = computePctTile(inD,  s_val_Ht_wo_shoes)
   s_val_Ht_wo_shoes_chr <- paste0(s_val_Ht_wo_shoes%/%12,"'",s_val_Ht_wo_shoes%%12)
   
+  # r_pct_StandReach,
+  # r_val_StandReach_chr,x
+
+  cbnVal = this_ath$c_val_StandReach
+  s_val_StandReach = max(cbnVal,this_ath$r_val_StandReach, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_StandReach', 'value']
-  r_pct_StandReach = computePctTile(inD, this_ath$r_val_StandReach)
-  r_val_StandReach_chr <- paste0(this_ath$r_val_StandReach%/%12,"'",this_ath$r_val_StandReach%%12)
+  s_pct_StandReach = computePctTile(inD, s_val_StandReach)
+  s_val_StandReach_chr <- paste0(s_val_StandReach%/%12,"'", s_val_StandReach%%12)
   
+  cbnVal = this_ath$c_val_Wing
+  s_val_Wing = max(cbnVal,this_ath$r_val_Wing, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_Wing', 'value']
-  r_pct_Wing = computePctTile(inD, this_ath$r_val_Wing)
-  r_val_Wing_chr <- paste0(this_ath$r_val_Wing%/%12,"'",this_ath$r_val_Wing%%12)
+  s_pct_Wing = computePctTile(inD, s_val_Wing)
+  s_val_Wing_chr <- paste0(s_val_Wing%/%12,"'",s_val_Wing%%12)
   
+  cbnVal =  this_ath$c_val_WingHt
+  s_val_WingHt = max(cbnVal, this_ath$r_val_WingHt, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_WingHt', 'value']
-  r_pct_WingHt = computePctTile(inD, this_ath$r_val_WingHt)
+  s_pct_WingHt = computePctTile(inD, s_val_WingHt)
   
+  cbnVal =  this_ath$c_val_JumpHt
+  s_val_JumpHt = max(cbnVal, this_ath$r_val_JumpHt, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_JumpHt', 'value']
-  r_pct_JumpHt = computePctTile(inD, this_ath$r_val_JumpHt)
-  r_val_JumpHt_chr <- paste0(this_ath$r_val_JumpHt%/%12,"'",this_ath$r_val_JumpHt%%12)
+  s_pct_JumpHt = computePctTile(inD, s_val_JumpHt)
+  s_val_JumpHt_chr <- paste0(s_val_JumpHt%/%12,"'",s_val_JumpHt%%12)
   
+  cbnVal =  this_ath$c_val_standMaxVert
+  s_val_standMaxVert = max(cbnVal, this_ath$r_val_standMaxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_standMaxVert', 'value']
-  r_pct_standMaxVert = computePctTile(inD, this_ath$r_val_standMaxVert)
+  s_pct_standMaxVert = computePctTile(inD, s_val_standMaxVert)
   
+  cbnVal =  this_ath$c_val_maxVert
+  s_val_maxVert = max(cbnVal, this_ath$r_val_maxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_maxVert', 'value']
-  r_pct_maxVert = computePctTile(inD, this_ath$r_val_maxVert)
+  s_pct_maxVert = computePctTile(inD, s_val_maxVert)
   
+  cbnVal =  this_ath$c_val_BW_lbs
+  s_val_BW_lbs = max(cbnVal, this_ath$r_val_BW_lbs, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_BW_lbs', 'value']
-  r_pct_BW_lbs = computePctTile(inD, this_ath$r_val_BW_lbs)
+  s_pct_BW_lbs = computePctTile(inD, s_val_BW_lbs)
   
+  cbnVal =  this_ath$c_val_Bfat_pct
+  s_val_Bfat_pct = min(cbnVal, this_ath$r_val_Bfat_pct, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_Bfat_pct', 'value']
-  r_pct_Bfat_pct = computePctTile(inD, this_ath$r_val_Bfat_pct, higher_better = FALSE)
+  s_pct_Bfat_pct = computePctTile(inD, s_val_Bfat_pct, higher_better = FALSE)
   
+  cbnVal =  this_ath$c_val_HandLen
+  s_val_HandLen = max(cbnVal, this_ath$r_val_HandLen, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_HandLen', 'value']
-  r_pct_HandLen = computePctTile(inD, this_ath$r_val_HandLen)
+  s_pct_HandLen = computePctTile(inD, s_val_HandLen)
   
+  cbnVal =  this_ath$c_val_HandWid
+  s_val_HandWid = max(cbnVal, this_ath$r_val_HandWid, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_HandWid', 'value']
-  r_pct_HandWid = computePctTile(inD, this_ath$r_val_HandWid)
+  s_pct_HandWid = computePctTile(inD, s_val_HandWid)
   
+  cbnVal =  this_ath$c_val_LaneShut_R
+  s_val_LaneShut_R = min(cbnVal, this_ath$r_val_LaneShut_R, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_R', 'value']
-  r_pct_LaneShut_R = computePctTile(inD, this_ath$r_val_LaneShut_R, higher_better = F)
+  s_pct_LaneShut_R = computePctTile(inD, s_val_LaneShut_R, higher_better = F)
   
+  cbnVal =  this_ath$c_val_LaneShut_L
+  s_val_LaneShut_L = min(cbnVal, this_ath$r_val_LaneShut_L, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_L', 'value']
-  r_pct_LaneShut_L = computePctTile(inD, this_ath$r_val_LaneShut_L, higher_better = F)
+  s_pct_LaneShut_L = computePctTile(inD, s_val_LaneShut_R, higher_better = F)
   
+  cbnVal =  this_ath$c_val_3qrtSpeed
+  s_val_3qrtSpeed = min(cbnVal, this_ath$r_val_3qrtRock, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_3qrtSpeed', 'value']
-  r_pct_3qrtRock = computePctTile(inD, this_ath$r_val_3qrtRock, higher_better = F)
+  s_pct_3qrtSpeed = computePctTile(inD, s_val_3qrtSpeed, higher_better = F)
   
   ## force
   
@@ -275,6 +304,8 @@ for (r in seq(1, nrow(df_anthro))) {
   
   ## drop jump
   thisath_DJ <- d_dj_rocket %>% filter(fullname == fullName)
+  if(nrow(thisath_DJ) == 0) {thisath_DJ[1,] = NA}
+  
   # val_DJ_CT
   r_val_DJ_CT = thisath_DJ$contact_time_s
   inD <- df_force_hist %>% filter(type == 'Drop Jump',
@@ -291,6 +322,7 @@ for (r in seq(1, nrow(df_anthro))) {
   
   ## SLJ jump
   thisath_SLJ <- d_slj_rocket %>% filter(fullname == fullName)
+  if(nrow(thisath_SLJ) == 0) {thisath_SLJ[1,] = NA}
   
   ## val_SL_EccMean_L
   r_val_SL_EccMean_L = thisath_SLJ$Left_eccentric_mean_force_n_kg
@@ -312,25 +344,37 @@ for (r in seq(1, nrow(df_anthro))) {
   this_ath <- cbind(
     this_ath,
     data.frame(
-      r_pct_Ht_wo_shoes,
-      r_val_Ht_wo_shoes_chr,
-      r_pct_StandReach,
-      r_val_StandReach_chr,
-      r_pct_Wing,
-      r_val_Wing_chr,
-      r_pct_WingHt,
-      r_pct_JumpHt,
-      r_val_JumpHt_chr,
-      r_pct_standMaxVert,
-      r_pct_maxVert,
-      r_pct_BW_lbs,
-      r_pct_Bfat_pct,
-      r_pct_HandLen,
-      r_pct_HandWid,
-      r_pct_HandWid,
-      r_pct_LaneShut_R,
-      r_pct_LaneShut_L,
-      r_pct_3qrtRock,
+      s_val_Ht_wo_shoes,
+      s_pct_Ht_wo_shoes,
+      s_val_Ht_wo_shoes_chr,
+      s_pct_StandReach,
+      s_val_StandReach_chr,
+      s_val_Wing,
+      s_pct_Wing,
+      s_val_Wing_chr,
+      s_val_WingHt,
+      s_pct_WingHt,
+      s_val_JumpHt,
+      s_pct_JumpHt,
+      s_val_JumpHt_chr,
+      s_val_standMaxVert,
+      s_pct_standMaxVert,
+      s_val_maxVert,
+      s_pct_maxVert,
+      s_val_BW_lbs,
+      s_pct_BW_lbs,
+      s_val_Bfat_pct,
+      s_pct_Bfat_pct,
+      s_val_HandLen,
+      s_pct_HandLen,
+      s_val_HandWid,
+      s_pct_HandWid,
+      s_val_LaneShut_R,
+      s_pct_LaneShut_R,
+      s_val_LaneShut_L,
+      s_pct_LaneShut_L,
+      s_val_3qrtSpeed,
+      s_pct_3qrtSpeed,
       r_val_CM_conImp,
       r_pct_CM_conImp,
       r_val_CM_fzero,
