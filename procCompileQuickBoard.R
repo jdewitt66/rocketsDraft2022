@@ -48,6 +48,7 @@ d_2 <- bind_rows(
 )
 
 ## combine into a single dataframe and remove dups
-d_all <- bind_rows(d, d_2) %>% distinct()
+d_all <- bind_rows(d, d_2) %>% distinct() %>%
+  filter(qb_t > 0)
 
 write.csv(d_all, file = 'allHistoricalQuickboardData.csv', row.names = F)
