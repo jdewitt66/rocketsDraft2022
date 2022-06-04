@@ -210,82 +210,98 @@ for (r in seq(1, nrow(df_anthro))) {
   
   ## anthro (compare with combine and report highest value)
   ## keep three variables - c = combine, r = rocket, s = max of both (for report)
+  
+  ## Ht wo shoes
   cbnVal = this_ath$c_val_Ht_wo_shoes
   s_val_Ht_wo_shoes = max(cbnVal,this_ath$r_val_Ht_wo_shoes, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_Ht_wo_shoes', 'value']
   s_pct_Ht_wo_shoes = computePctTile(inD,  s_val_Ht_wo_shoes)
   s_val_Ht_wo_shoes_chr <- paste0(s_val_Ht_wo_shoes%/%12,"'",s_val_Ht_wo_shoes%%12)
   
-  # r_pct_StandReach,
-  # r_val_StandReach_chr,x
-
+  # StandReach
   cbnVal = this_ath$c_val_StandReach
   s_val_StandReach = max(cbnVal,this_ath$r_val_StandReach, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_StandReach', 'value']
   s_pct_StandReach = computePctTile(inD, s_val_StandReach)
   s_val_StandReach_chr <- paste0(s_val_StandReach%/%12,"'", s_val_StandReach%%12)
   
+  # Wing
   cbnVal = this_ath$c_val_Wing
   s_val_Wing = max(cbnVal,this_ath$r_val_Wing, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_Wing', 'value']
   s_pct_Wing = computePctTile(inD, s_val_Wing)
   s_val_Wing_chr <- paste0(s_val_Wing%/%12,"'",s_val_Wing%%12)
   
+  # WingHt
   cbnVal =  this_ath$c_val_WingHt
   s_val_WingHt = max(cbnVal, this_ath$r_val_WingHt, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_WingHt', 'value']
   s_pct_WingHt = computePctTile(inD, s_val_WingHt)
   
+  # Jump Ht
   cbnVal =  this_ath$c_val_JumpHt
   s_val_JumpHt = max(cbnVal, this_ath$r_val_JumpHt, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_JumpHt', 'value']
   s_pct_JumpHt = computePctTile(inD, s_val_JumpHt)
   s_val_JumpHt_chr <- paste0(s_val_JumpHt%/%12,"'",s_val_JumpHt%%12)
   
+  # Stand Max Vert
   cbnVal =  this_ath$c_val_standMaxVert
   s_val_standMaxVert = max(cbnVal, this_ath$r_val_standMaxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_standMaxVert', 'value']
   s_pct_standMaxVert = computePctTile(inD, s_val_standMaxVert)
   
+  # Max Vert
   cbnVal =  this_ath$c_val_maxVert
   s_val_maxVert = max(cbnVal, this_ath$r_val_maxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_maxVert', 'value']
   s_pct_maxVert = computePctTile(inD, s_val_maxVert)
   
+  # BW lbs
   cbnVal =  this_ath$c_val_BW_lbs
   s_val_BW_lbs = max(cbnVal, this_ath$r_val_BW_lbs, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_BW_lbs', 'value']
   s_pct_BW_lbs = computePctTile(inD, s_val_BW_lbs)
   
+  # Bfat
   cbnVal =  this_ath$c_val_Bfat_pct
   s_val_Bfat_pct = min(cbnVal, this_ath$r_val_Bfat_pct, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_Bfat_pct', 'value']
   s_pct_Bfat_pct = computePctTile(inD, s_val_Bfat_pct, higher_better = FALSE)
   
+  # Hand length
   cbnVal =  this_ath$c_val_HandLen
   s_val_HandLen = max(cbnVal, this_ath$r_val_HandLen, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_HandLen', 'value']
   s_pct_HandLen = computePctTile(inD, s_val_HandLen)
   
+  # Hand width
   cbnVal =  this_ath$c_val_HandWid
   s_val_HandWid = max(cbnVal, this_ath$r_val_HandWid, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_HandWid', 'value']
   s_pct_HandWid = computePctTile(inD, s_val_HandWid)
   
+  # lane shuttle R
   cbnVal =  this_ath$c_val_LaneShut_R
   s_val_LaneShut_R = min(cbnVal, this_ath$r_val_LaneShut_R, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_R', 'value']
   s_pct_LaneShut_R = computePctTile(inD, s_val_LaneShut_R, higher_better = F)
   
+  # lane shittle L
   cbnVal =  this_ath$c_val_LaneShut_L
   s_val_LaneShut_L = min(cbnVal, this_ath$r_val_LaneShut_L, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_L', 'value']
   s_pct_LaneShut_L = computePctTile(inD, s_val_LaneShut_R, higher_better = F)
   
+  # 3qrt speed
   cbnVal =  this_ath$c_val_3qrtSpeed
   s_val_3qrtSpeed = min(cbnVal, this_ath$r_val_3qrtRock, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_3qrtSpeed', 'value']
   s_pct_3qrtSpeed = computePctTile(inD, s_val_3qrtSpeed, higher_better = F)
+  
+  # quickboard total
+  inD <- d_hist_qb$qb_t
+  s_pct_QB = computePctTile(inD, this_ath_rock$r_val_QB)
   
   ## force
   
@@ -361,6 +377,9 @@ for (r in seq(1, nrow(df_anthro))) {
     select(value) %>% pull()
   r_pct_SL_EccMean_R = computePctTile(inD, r_val_SL_EccMean_R)
   
+
+  
+  # SL symmetry from SLJ
   r_SLJ_Sym = round(((r_val_SL_EccMean_R / r_val_SL_EccMean_L) - 1) * 100,2)
   
   ## add section and total grades
@@ -369,7 +388,7 @@ for (r in seq(1, nrow(df_anthro))) {
   avgAcc = mean(c(s_pct_3qrtSpeed), na.rm = T)
   avgVertForce = mean(c(r_pct_CM_conImp, r_pct_CM_fzero, r_pct_CM_relPP, r_pct_CM_PP, r_pct_CM_RSImod), na.rm = T)
   avg2ndExpl = mean(c(r_pct_DJ_CT, r_pct_DJ_RSI), na.rm = T)
-  avgAcc2 = mean(s_pct_3qrtSpeed, na.rm = T)
+  avgAcc2 = mean(c(s_pct_3qrtSpeed, s_pct_QB), na.rm = T)
   avgLat = mean(c(s_pct_LaneShut_L, s_pct_LaneShut_R), na.rm = T)
   avgStab = NA  # filler until percentiles added
   avgSLJ = mean(c(r_pct_SL_EccMean_L, r_pct_SL_EccMean_R), na.rm = T)
@@ -433,6 +452,7 @@ for (r in seq(1, nrow(df_anthro))) {
       s_pct_LaneShut_L,
       s_val_3qrtSpeed,
       s_pct_3qrtSpeed,
+      s_pct_QB,
       r_val_CM_conImp,
       r_pct_CM_conImp,
       r_val_CM_fzero,
