@@ -7,27 +7,50 @@ require(openxlsx)
 inP <- '../../data/Rockets_Draft_2022'
 
 ## 1) Get combine data
-## 1a) Get historical combine data
-source('procGetHistoricalCombine.R')
-fn <- "nba-combine-historical-through-2021-results.csv"
-df_combine_hist <- getHistoricalCombine(inPath = inP, fileN = fn)
+getCombineData <- function(inP) {
+  ## 1a) Get historical combine data
+  source('procGetHistoricalCombine.R')
+  fn <- "nba-combine-historical-through-2021-results.csv"
+  df_combine_hist <- getHistoricalCombine(inPath = inP, fileN = fn)
+  
+  ## 1b) Get this year's combine data
+  df_combine_2022 <- read.csv('combine2022Cleaned.csv',
+                              stringsAsFactors = F)
+  
+  ## 1c) all combine data
+  df_combine_all <-
+    bind_rows(
+      df_combine_2022 %>%
+        gather(
+          varName,
+          value,
+          -first_name,
+          -last_name,
+          -position,
+          -testing_year
+        )
+      ,
+      df_combine_hist %>%
+        gather(
+          varName,
+          value,
+          -first_name,
+          -last_name,
+          -position,
+          -testing_year
+        )
+    ) %>%
+    mutate(fullname = paste(first_name, last_name)) %>%
+    select(fullname, everything())
+  
+  return(df_combine_all)
+}
 
-## 1b) Get this year's combine data
-df_combine_2022 <- read.csv('combine2022Cleaned.csv', 
-                            stringsAsFactors = F)
+df_combine <- getCombineData(inP)
 
-## 1c) all combine data
-df_combine <-
-  bind_rows(
-    df_combine_2022 %>%
-      gather(varName, value, -first_name, -last_name, -position, -testing_year)
-    ,
-    df_combine_hist %>%
-      gather(varName, value, -first_name, -last_name, -position, -testing_year) 
-  ) %>%
-  mutate(fullname = paste(first_name, last_name)) %>%
-  select(fullname, everything())
-
+## 1d) get historical quickboard data
+d_hist_qb = read.csv(file = 'allHistoricalQuickboardData.csv', 
+                     stringsAsFactors = F)
 
 ## 2) Get the performance data file from the data folder ----
 
