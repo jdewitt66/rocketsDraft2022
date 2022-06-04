@@ -8,9 +8,5 @@ This repo will hold the code to create the reports for Rockets Draft candidates
     - raw scores are from tests; percentiles are from historical combine overall   
   - Leaderboard report - Can be an RMD document (need to check)
 
-# To do
-  - Create code to read in combine data
-  - Create code to reformat input data into proper excel workbook
-  - Create a master jump file of all historical Rocket jump data
 
 
