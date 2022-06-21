@@ -61,7 +61,7 @@ df_anthro_in <- read.xlsx(file.path(inP, fn), detectDates = T) %>%
 
 ## create output anthro dataframe with new variable names that match mail merge
 df_anthro <- df_anthro_in %>%
-  mutate(fullname = paste(first_name, last_name),
+  mutate(fullname = trimws(paste(first_name, last_name)),
          age = floor(as.numeric((date - date_of_birth)/365.25)),
          r_val_WingHt = wingspan - height_no_shoes,) %>%
   rename(r_val_Ht_wo_shoes = height_no_shoes, 
