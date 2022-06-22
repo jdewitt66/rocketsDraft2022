@@ -56,6 +56,10 @@ d_hist_qb = read.csv(file = 'allHistoricalQuickboardData.csv',
 d_hist_10m = read.csv(file = "sprint10m_2021.csv",
                       stringsAsFactors = F)
 
+## 1f) get historical lane agility data
+d_hist_laneAgility = read.csv(file = "laneAgility2021.csv",
+                      stringsAsFactors = F)
+
 ## 2) Get the performance data file from the data folder ----
 
 fn <- "2022_Rockets_Draft_Data_Sheet .xlsx"   
@@ -128,7 +132,7 @@ d_cmj_rocket <-
   filter(varName != 'trial') %>%
   mutate(value = as.numeric(value)) %>%
   group_by(athlete, test_type, test_date, varName) %>%
-  summarise(meanVal = mean(value)) %>%
+  summarise(meanVal = mean(value, na.rm = T)) %>%
   ungroup() %>% spread(varName, meanVal) %>%
   rename(fullname = athlete,
          type = test_type, date = test_date)
@@ -151,7 +155,7 @@ d_dj_rocket <-
   filter(varName != 'trial') %>%
   mutate(value = as.numeric(value)) %>%
   group_by(athlete, test_type, test_date, varName) %>%
-  summarise(meanVal = mean(value)) %>%
+  summarise(meanVal = mean(value, na.rm = T)) %>%
   ungroup() %>% spread(varName, meanVal) %>%
   rename(fullname = athlete, type = test_type, date = test_date)
 
@@ -330,6 +334,11 @@ for (r in seq(1, nrow(df_anthro))) {
   s_pct_LaneShut_L = computePctTile(inD, s_val_LaneShut_L, higher_better = F)
   }
   
+  # lane agility
+  inD <- c((as.numeric(d_hist_laneAgility$lane_agility)),
+           (as.numeric(df_anthro$r_val_LaneAgility)))
+  s_pct_laneAgility = computePctTile(inD, this_ath$r_val_LaneAgility, higher_better = F)
+  
   # 3qrt speed
   cbnVal =  ifelse('c_val_3qrtSpeed' %in% names(this_ath),
                    this_ath$c_val_3qrtSpeed,
@@ -432,7 +441,7 @@ for (r in seq(1, nrow(df_anthro))) {
   
   ## add section and total grades
   avgVertExp = mean(c(s_pct_JumpHt, s_pct_standMaxVert, s_pct_maxVert), na.rm = T)
-  avgCOD = mean(c(s_pct_LaneShut_L, s_pct_LaneShut_R), na.rm = T)
+  avgCOD = mean(c(s_pct_LaneShut_L, s_pct_LaneShut_R, s_pct_laneAgility), na.rm = T)
   avgAcc = mean(c(s_pct_3qrtSpeed), na.rm = T)
   avgVertForce = mean(c(r_pct_CM_conImp, r_pct_CM_fzero, r_pct_CM_relPP, r_pct_CM_PP, r_pct_CM_RSImod), na.rm = T)
   avg2ndExpl = mean(c(r_pct_DJ_CT, r_pct_DJ_RSI), na.rm = T)
@@ -462,9 +471,9 @@ for (r in seq(1, nrow(df_anthro))) {
   gradeLat = makeRank(avgLat)
  # gradeStab= makeRank(avgStab)
   ## Make gradeStab L if avg < -10, R if avg > 10, S if -10 to 10
-  gradeStab = ifelse(avgStab < -10, 'L',
-                     ifelse(avgStab > 10, 'R',
-                            'S'))
+  gradeStab = ifelse(avgStab < -10, 'Left Dom',
+                     ifelse(avgStab > 10, 'Right Dom',
+                            'Symmetric'))
   gradeSLJ = makeRank(avgSLJ)
   gradeCombine = makeRank(avgCombine)
   gradeRocket = makeRank(avgRocket)
@@ -502,6 +511,7 @@ for (r in seq(1, nrow(df_anthro))) {
       s_pct_LaneShut_R,
       s_val_LaneShut_L,
       s_pct_LaneShut_L,
+      s_pct_laneAgility,
       s_val_3qrtSpeed,
       s_pct_3qrtSpeed,
       s_pct_QB,
