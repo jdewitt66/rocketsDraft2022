@@ -52,6 +52,10 @@ df_combine <- getCombineData(inP)
 d_hist_qb = read.csv(file = 'allHistoricalQuickboardData.csv', 
                      stringsAsFactors = F)
 
+## 1e) get historical 10 m data
+d_hist_10m = read.csv(file = "sprint10m_2021.csv",
+                      stringsAsFactors = F)
+
 ## 2) Get the performance data file from the data folder ----
 
 fn <- "2022_Rockets_Draft_Data_Sheet .xlsx"   
@@ -241,10 +245,12 @@ for (r in seq(1, nrow(df_anthro))) {
   s_pct_WingHt = computePctTile(inD, s_val_WingHt)
   
   # Jump Ht
-  cbnVal =  this_ath$c_val_JumpHt
+  cbnVal =  ifelse('c_val_JumpHt' %in% names(this_ath), 
+                   this_ath$c_val_JumpHt, 
+                   NA)
   # check if there was a jump - if not set output to NA
   if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_JumpHt)) {
-    s_val_JumpHt = '';  s_pct_JumpHt = '';  s_val_JumpHt_chr = ''
+    s_val_JumpHt = NA;  s_pct_JumpHt = NA;  s_val_JumpHt_chr = NA
   } else {
   s_val_JumpHt = max(cbnVal, this_ath$r_val_JumpHt, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_JumpHt', 'value']
@@ -253,9 +259,11 @@ for (r in seq(1, nrow(df_anthro))) {
   }
   
   # Stand Max Vert
-  cbnVal =  this_ath$c_val_standMaxVert
+  cbnVal =  ifelse('c_val_standmaxVert' %in% names(this_ath),
+                   this_ath$c_val_standMaxVert,
+                   NA)
   if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_standMaxVert)) {
-    s_val_standMaxVert = '';  s_pct_standMaxVert = ''
+    s_val_standMaxVert = NA;  s_pct_standMaxVert = NA
   } else {
   s_val_standMaxVert = max(cbnVal, this_ath$r_val_standMaxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_standMaxVert', 'value']
@@ -263,9 +271,11 @@ for (r in seq(1, nrow(df_anthro))) {
   }
   
   # Max Vert
-  cbnVal =  this_ath$c_val_maxVert
+  cbnVal =  ifelse('c_val_maxVert' %in% names(this_ath),
+                   this_ath$c_val_maxVert,
+                   NA)
   if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_maxVert)) {
-    s_val_maxVert = '';  s_pct_maxVert = ''
+    s_val_maxVert = NA;  s_pct_maxVert = NA
   } else {
   s_val_maxVert = max(cbnVal, this_ath$r_val_maxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_maxVert', 'value']
@@ -297,9 +307,11 @@ for (r in seq(1, nrow(df_anthro))) {
   s_pct_HandWid = computePctTile(inD, s_val_HandWid)
   
   # lane shuttle R
-  cbnVal =  this_ath$c_val_LaneShut_R
+  cbnVal =  ifelse('c_val_LaneShut_R' %in% names(this_ath),
+                   this_ath$c_val_LaneShut_R,
+                   NA)
   if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_LaneShut_R)) {
-    s_val_LaneShut_R = '';  s_pct_LaneShut_R = ''
+    s_val_LaneShut_R = NA;  s_pct_LaneShut_R = NA
   } else {
   s_val_LaneShut_R = min(cbnVal, this_ath$r_val_LaneShut_R, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_R', 'value']
@@ -307,9 +319,11 @@ for (r in seq(1, nrow(df_anthro))) {
   }
   
   # lane shuttle L
-  cbnVal =  this_ath$c_val_LaneShut_L
+  cbnVal =  ifelse('c_val_LaneShut_L' %in% names(this_ath),
+                   this_ath$c_val_LaneShut_L,
+                   NA)
   if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_LaneShut_L)) {
-    s_val_LaneShut_L = '';  s_pct_LaneShut_L = ''
+    s_val_LaneShut_L = NA;  s_pct_LaneShut_L = NA
   } else {
   s_val_LaneShut_L = min(cbnVal, this_ath$r_val_LaneShut_L, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_L', 'value']
@@ -317,17 +331,24 @@ for (r in seq(1, nrow(df_anthro))) {
   }
   
   # 3qrt speed
-  cbnVal =  this_ath$c_val_3qrtSpeed
+  cbnVal =  ifelse('c_val_3qrtSpeed' %in% names(this_ath),
+                   this_ath$c_val_3qrtSpeed,
+                   NA)
   if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_3qrtRock)) {
-    s_val_3qrtSpeed = '';  s_pct_3qrtSpeed = ''
+    s_val_3qrtSpeed = NA;  s_pct_3qrtSpeed = NA
   } else {
   s_val_3qrtSpeed = min(cbnVal, this_ath$r_val_3qrtRock, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_3qrtSpeed', 'value']
   s_pct_3qrtSpeed = computePctTile(inD, s_val_3qrtSpeed, higher_better = F)
   }
+  
   # quickboard total
   inD <- d_hist_qb$qb_t
   s_pct_QB = computePctTile(inD, this_ath_rock$r_val_QB)
+  
+  # 10 m
+  inD <- c((as.numeric(d_hist_10m$value)),(as.numeric(df_anthro$r_val_10m)))
+  s_pct_10m = computePctTile(inD, this_ath_rock$r_val_10m, higher_better = F)
   
   ## force
   
@@ -405,10 +426,9 @@ for (r in seq(1, nrow(df_anthro))) {
     select(value) %>% pull()
   r_pct_SL_EccMean_R = computePctTile(inD, r_val_SL_EccMean_R)
   
-
-  
   # SL symmetry from SLJ
   r_SLJ_Sym = round(((r_val_SL_EccMean_R / r_val_SL_EccMean_L) - 1) * 100,2)
+  r_val_qb_imbalance = this_ath$r_val_qb_imbalance
   
   ## add section and total grades
   avgVertExp = mean(c(s_pct_JumpHt, s_pct_standMaxVert, s_pct_maxVert), na.rm = T)
@@ -416,9 +436,9 @@ for (r in seq(1, nrow(df_anthro))) {
   avgAcc = mean(c(s_pct_3qrtSpeed), na.rm = T)
   avgVertForce = mean(c(r_pct_CM_conImp, r_pct_CM_fzero, r_pct_CM_relPP, r_pct_CM_PP, r_pct_CM_RSImod), na.rm = T)
   avg2ndExpl = mean(c(r_pct_DJ_CT, r_pct_DJ_RSI), na.rm = T)
-  avgAcc2 = mean(c(s_pct_3qrtSpeed, s_pct_QB), na.rm = T)
+  avgAcc2 = mean(c(s_pct_3qrtSpeed, s_pct_QB, s_pct_10m), na.rm = T)
   avgLat = mean(c(s_pct_LaneShut_L, s_pct_LaneShut_R), na.rm = T)
-  avgStab = NA  # filler until percentiles added
+  avgStab = mean(r_SLJ_Sym, r_val_qb_imbalance, na.rm = T)  
   avgSLJ = mean(c(r_pct_SL_EccMean_L, r_pct_SL_EccMean_R), na.rm = T)
   avgCombine = mean(c(avgVertExp, avgCOD, avgAcc), na.rm = T)
   avgRocket = mean(c(avgVertForce, avg2ndExpl, avgAcc2, avgLat,
@@ -440,7 +460,11 @@ for (r in seq(1, nrow(df_anthro))) {
   grade2ndExpl = makeRank(avg2ndExpl)
   gradeAcc2 = makeRank(avgAcc2)
   gradeLat = makeRank(avgLat)
-  gradeStab= makeRank(avgStab)
+ # gradeStab= makeRank(avgStab)
+  ## Make gradeStab L if avg < -10, R if avg > 10, S if -10 to 10
+  gradeStab = ifelse(avgStab < -10, 'L',
+                     ifelse(avgStab > 10, 'R',
+                            'S'))
   gradeSLJ = makeRank(avgSLJ)
   gradeCombine = makeRank(avgCombine)
   gradeRocket = makeRank(avgRocket)
@@ -481,6 +505,7 @@ for (r in seq(1, nrow(df_anthro))) {
       s_val_3qrtSpeed,
       s_pct_3qrtSpeed,
       s_pct_QB,
+      s_pct_10m,
       r_val_CM_conImp,
       r_pct_CM_conImp,
       r_val_CM_fzero,
@@ -519,5 +544,5 @@ for (r in seq(1, nrow(df_anthro))) {
 }
 
 ## 5) write to excel file
-write.xlsx(allOut, file = 'docs/draft2022CompiledData2022Jun22.xlsx')
+write.xlsx(allOut, file = 'docs/draft2022CompiledData2022Jun22_c.xlsx')
 
