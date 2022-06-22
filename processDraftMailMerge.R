@@ -61,7 +61,7 @@ df_anthro_in <- read.xlsx(file.path(inP, fn), detectDates = T) %>%
 
 ## create output anthro dataframe with new variable names that match mail merge
 df_anthro <- df_anthro_in %>%
-  mutate(fullname = trimws(paste(first_name, last_name)),
+  mutate(fullname = trimws(paste(trimws(first_name), trimws(last_name))),
          age = floor(as.numeric((date - date_of_birth)/365.25)),
          r_val_WingHt = wingspan - height_no_shoes,) %>%
   rename(r_val_Ht_wo_shoes = height_no_shoes, 
@@ -306,6 +306,8 @@ for (r in seq(1, nrow(df_anthro))) {
   ## force
   
   thisath_CMJ <- d_cmj_rocket %>% filter(fullname == fullName)
+  if(nrow(thisath_CMJ) == 0) {thisath_CMJ[1,] = NA}
+  
   # val_CM_conImp
   r_val_CM_conImp = thisath_CMJ$concentric_impulse_ns_kg
   inD <- df_force_hist %>% filter(type == 'Countermovement Jump',
@@ -491,5 +493,5 @@ for (r in seq(1, nrow(df_anthro))) {
 }
 
 ## 5) write to excel file
-write.xlsx(allOut, file = 'docs/draft2022CompiledData.xlsx')
+write.xlsx(allOut, file = 'docs/draft2022CompiledData2022Jun22.xlsx')
 
