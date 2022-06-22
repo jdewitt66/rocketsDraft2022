@@ -87,7 +87,7 @@ df_anthro <- df_anthro_in %>%
     #     val_ProLaneAgility_L = pro_lane_agility_l,
          r_val_LMM = lean_muscle_mass
        ) %>%
-  mutate(r_val_qb_imbalance = ((r_val_QB_R / r_val_QB_L) - 1) *100,
+  mutate(r_val_qb_imbalance = round(((r_val_QB_R / r_val_QB_L) - 1) *100,2),
          r_val_JumpHt = r_val_StandReach + r_val_maxVert) 
 
 ## 3) Get Rocket Jump data -----
@@ -242,22 +242,35 @@ for (r in seq(1, nrow(df_anthro))) {
   
   # Jump Ht
   cbnVal =  this_ath$c_val_JumpHt
+  # check if there was a jump - if not set output to NA
+  if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_JumpHt)) {
+    s_val_JumpHt = '';  s_pct_JumpHt = '';  s_val_JumpHt_chr = ''
+  } else {
   s_val_JumpHt = max(cbnVal, this_ath$r_val_JumpHt, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_JumpHt', 'value']
   s_pct_JumpHt = computePctTile(inD, s_val_JumpHt)
   s_val_JumpHt_chr <- paste0(s_val_JumpHt%/%12,"'",s_val_JumpHt%%12)
+  }
   
   # Stand Max Vert
   cbnVal =  this_ath$c_val_standMaxVert
+  if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_standMaxVert)) {
+    s_val_standMaxVert = '';  s_pct_standMaxVert = ''
+  } else {
   s_val_standMaxVert = max(cbnVal, this_ath$r_val_standMaxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_standMaxVert', 'value']
   s_pct_standMaxVert = computePctTile(inD, s_val_standMaxVert)
+  }
   
   # Max Vert
   cbnVal =  this_ath$c_val_maxVert
+  if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_maxVert)) {
+    s_val_maxVert = '';  s_pct_maxVert = ''
+  } else {
   s_val_maxVert = max(cbnVal, this_ath$r_val_maxVert, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_maxVert', 'value']
   s_pct_maxVert = computePctTile(inD, s_val_maxVert)
+  }
   
   # BW lbs
   cbnVal =  this_ath$c_val_BW_lbs
@@ -285,22 +298,33 @@ for (r in seq(1, nrow(df_anthro))) {
   
   # lane shuttle R
   cbnVal =  this_ath$c_val_LaneShut_R
+  if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_LaneShut_R)) {
+    s_val_LaneShut_R = '';  s_pct_LaneShut_R = ''
+  } else {
   s_val_LaneShut_R = min(cbnVal, this_ath$r_val_LaneShut_R, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_R', 'value']
   s_pct_LaneShut_R = computePctTile(inD, s_val_LaneShut_R, higher_better = F)
+  }
   
-  # lane shittle L
+  # lane shuttle L
   cbnVal =  this_ath$c_val_LaneShut_L
+  if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_LaneShut_L)) {
+    s_val_LaneShut_L = '';  s_pct_LaneShut_L = ''
+  } else {
   s_val_LaneShut_L = min(cbnVal, this_ath$r_val_LaneShut_L, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_LaneShut_L', 'value']
-  s_pct_LaneShut_L = computePctTile(inD, s_val_LaneShut_R, higher_better = F)
+  s_pct_LaneShut_L = computePctTile(inD, s_val_LaneShut_L, higher_better = F)
+  }
   
   # 3qrt speed
   cbnVal =  this_ath$c_val_3qrtSpeed
+  if((is.na(cbnVal) | is.null(cbnVal)) & is.na(this_ath$r_val_3qrtRock)) {
+    s_val_3qrtSpeed = '';  s_pct_3qrtSpeed = ''
+  } else {
   s_val_3qrtSpeed = min(cbnVal, this_ath$r_val_3qrtRock, na.rm = T)
   inD = df_combine[df_combine$varName == 'c_val_3qrtSpeed', 'value']
   s_pct_3qrtSpeed = computePctTile(inD, s_val_3qrtSpeed, higher_better = F)
-  
+  }
   # quickboard total
   inD <- d_hist_qb$qb_t
   s_pct_QB = computePctTile(inD, this_ath_rock$r_val_QB)
